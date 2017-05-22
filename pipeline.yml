@@ -1,12 +1,39 @@
-platform: linux
+jobs:
+  - name: test-travis-encrypt
+    plan:
+      - get: Travis-Encrypt
+        trigger: true
+      - task: test
+        config: 
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: {repository: ubuntu, tag: "14.04"}
+          inputs:
+            - name: Travis-Encrypt
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                apt update
+                apt install wget --assume-yes
+                wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+                bash miniconda.sh -b -p $HOME/miniconda
+                export PATH="$HOME/miniconda/bin:$PATH"
+                export LC_ALL="C.UTF-8"
+                export LANG="C.UTF-8"
+                conda config --set always_yes yes
+                conda update -q conda
+                conda install pytest pytest-cov
+                cd Travis-Encrypt
+                python setup.py install
+                pytest -s -v --cov=.
 
-image_resource:
-  type: docker-image
-  source: {repository: ubuntu, tag: "14.04"}
-
-run:
-  path: sh
-  args: 
-    - -exc
-    - |
-      test.sh
+resources:
+- name: Travis-Encrypt
+  type: git
+  source:
+    uri: {{github-url}}
+    branch: concourse
+    private_key: {{github-private-key}}
