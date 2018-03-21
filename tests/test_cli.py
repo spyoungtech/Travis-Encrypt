@@ -204,10 +204,12 @@ def test_environment_variable_multiple_global_items():
                 assert base64.b64decode(item['secure'])
 
 def test_password_copied_to_clipboard():
-    pyperclip.set_clipboard('xclip')
+    pyperclip.set_clipboard('xsel')
     runner = CliRunner()
     result = runner.invoke(cli, ['--clipboard', 'mandeep', 'Travis-Encrypt'],
                            'SUPER_SECURE_PASSWORD')
     assert not result.exception
     assert 'The encrypted password has been copied to your clipboard.' in result.output
-    assert base64.b64decode(pyperclip.paste())
+    clip_contents = pyperclip.paste()
+    assert clip_contents, 'Clipboard did not have any contents'
+    assert base64.b64decode(clip_contents), 'The clipboard content could not be decoded: ' + repr(clip_contents)

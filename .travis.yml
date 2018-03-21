@@ -15,7 +15,7 @@ python:
   - "pypy"
   - "pypy3"
 
-addons: {apt: {packages: [xclip]}}
+addons: {apt: {packages: [xsel]}}
 
 deploy:
   true:
