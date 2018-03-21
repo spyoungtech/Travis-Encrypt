@@ -204,6 +204,7 @@ def test_environment_variable_multiple_global_items():
                 assert base64.b64decode(item['secure'])
 
 def test_password_copied_to_clipboard():
+    pyperclip.set_clipboard('xclip')
     runner = CliRunner()
     result = runner.invoke(cli, ['--clipboard', 'mandeep', 'Travis-Encrypt'],
                            'SUPER_SECURE_PASSWORD')
